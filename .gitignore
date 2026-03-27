@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+
+# Build
+dist
+dist-ssr
+
+# Logs
+*.log
+
+# Editor
+.vscode
+.idea
+*.sw?
+
+# OS
+.DS_Store
+
+# Claude Code
+.claude/

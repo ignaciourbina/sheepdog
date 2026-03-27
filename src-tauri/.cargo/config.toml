@@ -1,0 +1,5 @@
+[build]
+target-dir = "/home/ignacio/.cache/sheepdog/target"
+
+[env]
+PKG_CONFIG_PATH = { value = "/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig", force = true }
