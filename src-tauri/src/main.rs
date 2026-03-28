@@ -2,5 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    sheepdog_lib::run()
+    let args: Vec<String> = std::env::args().collect();
+    sheepdog_lib::run_with_args(&args);
 }

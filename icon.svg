@@ -1,65 +1,71 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background: rounded square -->
-  <rect width="512" height="512" rx="96" fill="#1a1d2e"/>
-
-  <!-- Subtle gradient overlay -->
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#1e2240"/>
       <stop offset="100%" stop-color="#141628"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#60a5fa"/>
-      <stop offset="100%" stop-color="#3b82f6"/>
-    </linearGradient>
   </defs>
+
+  <!-- Background -->
   <rect width="512" height="512" rx="96" fill="url(#bg)"/>
 
-  <!-- Dog head silhouette - stylized border collie -->
-  <!-- Left ear -->
-  <path d="M148 140 Q130 90 158 70 Q186 55 200 100 L192 155 Z" fill="url(#accent)" opacity="0.9"/>
-  <!-- Right ear -->
-  <path d="M364 140 Q382 90 354 70 Q326 55 312 100 L320 155 Z" fill="url(#accent)" opacity="0.9"/>
+  <!-- Left ear (black/dark) -->
+  <path d="M138 165 L118 80 L190 130 Z" fill="#2a2a2a"/>
+  <!-- Right ear (black/dark) -->
+  <path d="M374 165 L394 80 L322 130 Z" fill="#2a2a2a"/>
+  <!-- Ear inners (pink tint) -->
+  <path d="M145 155 L133 95 L185 135 Z" fill="#4a3a3a"/>
+  <path d="M367 155 L379 95 L327 135 Z" fill="#4a3a3a"/>
 
-  <!-- Head shape -->
-  <ellipse cx="256" cy="200" rx="108" ry="100" fill="url(#accent)"/>
+  <!-- Head shape - black fur -->
+  <ellipse cx="256" cy="230" rx="125" ry="115" fill="#2a2a2a"/>
 
-  <!-- Face/muzzle - lighter area -->
-  <ellipse cx="256" cy="225" rx="60" ry="55" fill="#e2e4ea"/>
+  <!-- White face blaze - the distinctive collie stripe down the center -->
+  <path d="M226 115 Q256 100 286 115 L290 180 Q292 210 285 240 L280 290 Q270 340 256 350 Q242 340 232 290 L227 240 Q220 210 222 180 Z" fill="#f0ece8"/>
 
-  <!-- Forehead blaze (white stripe - characteristic of border collies) -->
-  <path d="M240 120 Q256 105 272 120 L268 185 Q256 190 244 185 Z" fill="#e2e4ea"/>
+  <!-- White muzzle area -->
+  <ellipse cx="256" cy="300" rx="62" ry="48" fill="#f0ece8"/>
 
-  <!-- Eyes -->
-  <circle cx="218" cy="190" r="14" fill="#1a1d2e"/>
-  <circle cx="294" cy="190" r="14" fill="#1a1d2e"/>
-  <!-- Eye highlights -->
-  <circle cx="223" cy="186" r="5" fill="#fff" opacity="0.8"/>
-  <circle cx="299" cy="186" r="5" fill="#fff" opacity="0.8"/>
+  <!-- White cheek patches -->
+  <ellipse cx="200" cy="270" rx="30" ry="25" fill="#f0ece8" opacity="0.5"/>
+  <ellipse cx="312" cy="270" rx="30" ry="25" fill="#f0ece8" opacity="0.5"/>
+
+  <!-- Eyebrow tan markings (border collie tan points) -->
+  <ellipse cx="200" cy="210" rx="18" ry="10" fill="#8B6914" opacity="0.6"/>
+  <ellipse cx="312" cy="210" rx="18" ry="10" fill="#8B6914" opacity="0.6"/>
+
+  <!-- Eyes - almond shaped -->
+  <ellipse cx="205" cy="225" rx="16" ry="14" fill="#3a2518"/>
+  <ellipse cx="307" cy="225" rx="16" ry="14" fill="#3a2518"/>
+  <!-- Eye shine -->
+  <circle cx="211" cy="220" r="5" fill="#fff" opacity="0.85"/>
+  <circle cx="313" cy="220" r="5" fill="#fff" opacity="0.85"/>
+  <!-- Iris color -->
+  <ellipse cx="205" cy="226" rx="10" ry="9" fill="#5C3317"/>
+  <circle cx="210" cy="221" r="4" fill="#fff" opacity="0.8"/>
+  <ellipse cx="307" cy="226" rx="10" ry="9" fill="#5C3317"/>
+  <circle cx="312" cy="221" r="4" fill="#fff" opacity="0.8"/>
 
   <!-- Nose -->
-  <ellipse cx="256" cy="235" rx="16" ry="12" fill="#1a1d2e"/>
-  <!-- Nose highlight -->
-  <ellipse cx="253" cy="232" rx="5" ry="3" fill="#fff" opacity="0.15"/>
+  <path d="M244 295 Q256 285 268 295 Q270 305 260 312 Q256 314 252 312 Q242 305 244 295 Z" fill="#1a1a1a"/>
+  <!-- Nose shine -->
+  <ellipse cx="253" cy="296" rx="5" ry="3" fill="#fff" opacity="0.12"/>
 
-  <!-- Mouth -->
-  <path d="M256 247 Q245 260 238 255" stroke="#1a1d2e" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M256 247 Q267 260 274 255" stroke="#1a1d2e" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Mouth line -->
+  <path d="M256 312 L256 322" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M256 322 Q244 332 236 328" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M256 322 Q268 332 276 328" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 
-  <!-- Python-inspired element: two small interlinked circles below the dog -->
-  <circle cx="232" cy="340" r="22" fill="none" stroke="#fbbf24" stroke-width="5" opacity="0.7"/>
-  <circle cx="280" cy="340" r="22" fill="none" stroke="#34d399" stroke-width="5" opacity="0.7"/>
+  <!-- Subtle fur texture lines on black parts -->
+  <path d="M160 190 Q170 200 165 215" stroke="#3a3a3a" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M352 190 Q342 200 347 215" stroke="#3a3a3a" stroke-width="1.5" fill="none" opacity="0.4"/>
 
-  <!-- Connecting lines suggesting "herding" / organizing -->
-  <line x1="210" y1="340" x2="180" y2="370" stroke="#fbbf24" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
-  <line x1="302" y1="340" x2="332" y2="370" stroke="#34d399" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
-  <line x1="232" y1="362" x2="232" y2="395" stroke="#fbbf24" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
-  <line x1="280" y1="362" x2="280" y2="395" stroke="#34d399" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
+  <!-- Chest/collar area hint -->
+  <path d="M190 340 Q220 365 256 370 Q292 365 322 340" stroke="#f0ece8" stroke-width="6" fill="none" opacity="0.5" stroke-linecap="round"/>
 
-  <!-- Small dots representing scattered venvs being herded -->
-  <circle cx="175" cy="385" r="6" fill="#fbbf24" opacity="0.5"/>
-  <circle cx="340" cy="380" r="6" fill="#34d399" opacity="0.5"/>
-  <circle cx="230" cy="410" r="6" fill="#60a5fa" opacity="0.5"/>
-  <circle cx="285" cy="408" r="6" fill="#a78bfa" opacity="0.5"/>
-  <circle cx="256" cy="430" r="6" fill="#fbbf24" opacity="0.5"/>
+  <!-- Small Python-colored collar tag -->
+  <circle cx="256" cy="385" r="12" fill="#60a5fa" opacity="0.9"/>
+  <circle cx="256" cy="385" r="7" fill="#fbbf24" opacity="0.9"/>
+
+  <!-- Subtle "SD" on tag -->
 </svg>

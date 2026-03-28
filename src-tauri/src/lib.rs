@@ -1,5 +1,6 @@
 mod commands;
 mod db;
+mod demo;
 mod models;
 mod parser;
 mod pypi;
@@ -13,16 +14,26 @@ pub struct AppState {
     pub pypi_cache: pypi::PypiCache,
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    let db_path = dirs::cache_dir()
-        .unwrap_or_else(|| PathBuf::from("/tmp"))
-        .join("sheepdog")
-        .join("sheepdog.db");
+pub fn run_with_args(args: &[String]) {
+    let is_demo = args.iter().any(|a| a == "--demo");
 
-    std::fs::create_dir_all(db_path.parent().unwrap()).ok();
-    let conn = rusqlite::Connection::open(&db_path).expect("Failed to open database");
-    db::init_db(&conn).expect("Failed to initialize database");
+    let conn = if is_demo {
+        let conn = rusqlite::Connection::open_in_memory()
+            .expect("Failed to open in-memory database");
+        db::init_db(&conn).expect("Failed to initialize database");
+        demo::populate_demo_data(&conn).expect("Failed to populate demo data");
+        eprintln!("Sheepdog: running in demo mode (in-memory DB, fake data)");
+        conn
+    } else {
+        let db_path = dirs::cache_dir()
+            .unwrap_or_else(|| PathBuf::from("/tmp"))
+            .join("sheepdog")
+            .join("sheepdog.db");
+        std::fs::create_dir_all(db_path.parent().unwrap()).ok();
+        let conn = rusqlite::Connection::open(&db_path).expect("Failed to open database");
+        db::init_db(&conn).expect("Failed to initialize database");
+        conn
+    };
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
@@ -44,4 +55,9 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    run_with_args(&[]);
 }
