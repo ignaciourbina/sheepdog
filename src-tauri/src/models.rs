@@ -11,6 +11,7 @@ pub struct Venv {
     pub last_modified: String,
     pub scanned_at: String,
     pub package_count: i64,
+    pub config_files: String, // comma-separated: requirements.txt,pyproject.toml,...
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

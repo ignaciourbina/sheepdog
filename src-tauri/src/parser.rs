@@ -177,6 +177,26 @@ pub fn parse_requires_dist(raw: &str) -> ParsedRequirement {
     }
 }
 
+/// Detect Python config files in the project directory (parent of venv).
+pub fn detect_config_files(project_path: &Path) -> Vec<String> {
+    const CONFIG_FILES: &[&str] = &[
+        "requirements.txt",
+        "requirements-dev.txt",
+        "requirements_dev.txt",
+        "pyproject.toml",
+        "setup.py",
+        "setup.cfg",
+        "Pipfile",
+        "environment.yml",
+    ];
+
+    CONFIG_FILES
+        .iter()
+        .filter(|f| project_path.join(f).is_file())
+        .map(|f| f.to_string())
+        .collect()
+}
+
 /// Extract the extra name from a condition like `extra == "aiohttp"` or `extra == 'aiohttp'`.
 fn extract_extra(condition: &str) -> Option<String> {
     if condition.contains("extra") {

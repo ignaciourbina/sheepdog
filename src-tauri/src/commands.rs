@@ -124,3 +124,38 @@ pub async fn check_outdated(
     let results = pypi::check_packages(package_list, &state.pypi_cache).await;
     Ok(results)
 }
+
+#[tauri::command]
+pub fn read_project_file(
+    project_path: String,
+    filename: String,
+) -> Result<String, String> {
+    // Security: only allow known config file names
+    const ALLOWED: &[&str] = &[
+        "requirements.txt",
+        "requirements-dev.txt",
+        "requirements_dev.txt",
+        "pyproject.toml",
+        "setup.py",
+        "setup.cfg",
+        "Pipfile",
+        "environment.yml",
+    ];
+
+    if !ALLOWED.contains(&filename.as_str()) {
+        return Err("File not allowed".to_string());
+    }
+
+    let path = std::path::Path::new(&project_path).join(&filename);
+    std::fs::read_to_string(&path).map_err(|e| format!("Failed to read {}: {}", filename, e))
+}
+
+#[tauri::command]
+pub fn open_in_vscode(path: String) -> Result<(), String> {
+    std::process::Command::new("/snap/bin/code")
+        .arg("--new-window")
+        .arg(&path)
+        .spawn()
+        .map_err(|e| format!("Failed to open VS Code: {}", e))?;
+    Ok(())
+}

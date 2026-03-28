@@ -39,6 +39,8 @@ pub fn run() {
             commands::get_package_dependencies,
             commands::scan_venvs,
             commands::check_outdated,
+            commands::read_project_file,
+            commands::open_in_vscode,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

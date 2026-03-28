@@ -791,6 +791,100 @@ mark {
   padding: 0 1px;
 }
 
+/* ── Config badges ────────────────────────────────────────────── */
+
+.config-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-family: var(--mono);
+  font-weight: 600;
+  background: var(--green-dim);
+  color: var(--green);
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-right: 3px;
+  letter-spacing: 0.2px;
+}
+
+.config-badge:hover {
+  background: var(--green);
+  color: var(--bg);
+}
+
+/* ── File viewer overlay ──────────────────────────────────────── */
+
+.file-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 150;
+  animation: fadeIn 0.15s ease;
+}
+
+.file-viewer {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: min(700px, 90vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.file-viewer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.file-viewer-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+  font-family: var(--mono);
+}
+
+.file-viewer-path {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  margin-top: 2px;
+}
+
+.file-viewer-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color var(--transition);
+}
+
+.file-viewer-close:hover { color: var(--red); }
+
+.file-viewer-body {
+  padding: 14px 18px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+}
+
 /* ── Context menu ─────────────────────────────────────────────── */
 
 .context-menu {

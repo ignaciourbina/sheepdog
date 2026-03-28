@@ -73,6 +73,33 @@ function pyVersionClass(version) {
   return "tag-py-other";
 }
 
+function configFileShortName(filename) {
+  const map = {
+    "requirements.txt": "req",
+    "requirements-dev.txt": "req-dev",
+    "requirements_dev.txt": "req-dev",
+    "pyproject.toml": "pyproject",
+    "setup.py": "setup.py",
+    "setup.cfg": "setup.cfg",
+    "Pipfile": "Pipfile",
+    "environment.yml": "env.yml",
+  };
+  return map[filename] || filename;
+}
+
+function renderConfigBadges(configFilesStr, projectPath) {
+  if (!configFilesStr) return '<span style="color:var(--text-muted)">—</span>';
+  const files = configFilesStr.split(",").filter(Boolean);
+  if (files.length === 0) return '<span style="color:var(--text-muted)">—</span>';
+
+  return files
+    .map(
+      (f) =>
+        `<span class="config-badge" data-file="${escapeHtml(f)}" data-project="${escapeHtml(projectPath)}" title="${escapeHtml(f)}">${configFileShortName(f)}</span>`
+    )
+    .join(" ");
+}
+
 function pyMinor(version) {
   if (!version) return "other";
   const parts = version.split(".");
@@ -288,7 +315,10 @@ document.addEventListener("keydown", (e) => {
     searchInput.focus();
   }
   if (e.key === "Escape") {
-    if (document.activeElement === searchInput) {
+    const fileViewer = document.getElementById("file-viewer-overlay");
+    if (!fileViewer.classList.contains("hidden")) {
+      closeFileViewer();
+    } else if (document.activeElement === searchInput) {
       searchInput.value = "";
       searchInput.blur();
       loadDashboard();
@@ -421,6 +451,7 @@ function renderVenvTable(venvs) {
     { key: "project", label: "Project" },
     { key: "python", label: "Python" },
     { key: "packages", label: "Packages" },
+    { key: "config", label: "Config" },
     { key: "modified", label: "Modified" },
   ];
 
@@ -464,11 +495,12 @@ function renderVenvTable(venvs) {
           <span class="pkg-count-num">${v.package_count}</span>
         </div>
       </td>
+      <td>${renderConfigBadges(v.config_files, v.project_path)}</td>
       <td><span class="time-relative" title="${escapeHtml(v.last_modified)}">${relativeTime(v.last_modified)}</span></td>
     </tr>`;
 
     if (isExpanded) {
-      html += `<tr class="expanded-content" data-expanded-for="${v.id}"><td colspan="4">
+      html += `<tr class="expanded-content" data-expanded-for="${v.id}"><td colspan="5">
         <div class="expanded-inner" id="expanded-${v.id}">
           <div style="color:var(--text-muted);font-size:11px">Loading packages...</div>
         </div>
@@ -511,6 +543,9 @@ function renderVenvTable(venvs) {
   // Context menu & compare highlight
   attachContextMenu();
   highlightCompareRow();
+
+  // Config file click handlers
+  attachConfigBadgeClicks();
 }
 
 // ── Inline expansion ───────────────────────────────────────────────
@@ -800,6 +835,41 @@ function handleTableKeyboard(e) {
   }
 }
 
+// ── Config file viewer ─────────────────────────────────────────────
+
+function attachConfigBadgeClicks() {
+  tableContainer.querySelectorAll(".config-badge").forEach((badge) => {
+    badge.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const filename = badge.dataset.file;
+      const projectPath = badge.dataset.project;
+      showFileViewer(projectPath, filename);
+    });
+  });
+}
+
+async function showFileViewer(projectPath, filename) {
+  try {
+    const content = await invoke("read_project_file", { projectPath, filename });
+    const overlay = document.getElementById("file-viewer-overlay");
+    const title = document.getElementById("file-viewer-title");
+    const body = document.getElementById("file-viewer-body");
+    const pathEl = document.getElementById("file-viewer-path");
+
+    title.textContent = filename;
+    pathEl.textContent = shortenPath(projectPath + "/" + filename);
+    body.textContent = content;
+    overlay.classList.remove("hidden");
+  } catch (e) {
+    console.error("Failed to read file:", e);
+  }
+}
+
+function closeFileViewer() {
+  document.getElementById("file-viewer-overlay").classList.add("hidden");
+}
+window.closeFileViewer = closeFileViewer;
+
 // ── Context menu & Compare ──────────────────────────────────────────
 
 const contextMenu = document.getElementById("context-menu");
@@ -838,7 +908,7 @@ function attachContextMenu() {
       }
 
       ctxClearCompare.style.display = compareSelection ? "" : "none";
-      document.querySelector(".context-divider").style.display = compareSelection ? "" : "none";
+      document.getElementById("ctx-divider-clear").style.display = compareSelection ? "" : "none";
 
       // Position menu
       const x = Math.min(e.clientX, window.innerWidth - 220);
@@ -882,6 +952,22 @@ ctxClearCompare.addEventListener("click", (e) => {
   compareSelection = null;
   updateCompareBadge();
   highlightCompareRow();
+});
+
+document.getElementById("ctx-copy-path").addEventListener("click", (e) => {
+  e.stopPropagation();
+  contextMenu.classList.add("hidden");
+  if (contextVenvId === null) return;
+  const venv = allVenvs.find((v) => v.id === contextVenvId);
+  if (venv) navigator.clipboard.writeText(venv.project_path);
+});
+
+document.getElementById("ctx-open-vscode").addEventListener("click", (e) => {
+  e.stopPropagation();
+  contextMenu.classList.add("hidden");
+  if (contextVenvId === null) return;
+  const venv = allVenvs.find((v) => v.id === contextVenvId);
+  if (venv) invoke("open_in_vscode", { path: venv.project_path });
 });
 
 function updateCompareBadge() {

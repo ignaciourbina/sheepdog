@@ -15,7 +15,8 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             python_executable TEXT,
             venv_name         TEXT NOT NULL,
             last_modified     TEXT,
-            scanned_at        TEXT NOT NULL
+            scanned_at        TEXT NOT NULL,
+            config_files      TEXT NOT NULL DEFAULT ''
         );
 
         CREATE TABLE IF NOT EXISTS packages (
@@ -45,6 +46,15 @@ pub fn init_db(conn: &Connection) -> Result<()> {
         PRAGMA foreign_keys = ON;
         ",
     )?;
+
+    // Migration: add config_files column if it doesn't exist (for existing DBs)
+    let has_config_files: bool = conn
+        .prepare("SELECT config_files FROM venvs LIMIT 0")
+        .is_ok();
+    if !has_config_files {
+        conn.execute_batch("ALTER TABLE venvs ADD COLUMN config_files TEXT NOT NULL DEFAULT ''")?;
+    }
+
     Ok(())
 }
 
@@ -70,11 +80,12 @@ pub fn insert_venv(
     venv_name: &str,
     last_modified: &str,
     scanned_at: &str,
+    config_files: &str,
 ) -> Result<i64> {
     conn.execute(
-        "INSERT INTO venvs (path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        params![path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at],
+        "INSERT INTO venvs (path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at, config_files)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+        params![path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at, config_files],
     )?;
     Ok(conn.last_insert_rowid())
 }
@@ -139,6 +150,11 @@ pub fn insert_venv_full(
 
     let scanned_at = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
+    let config_files = venv_path
+        .parent()
+        .map(|p| parser::detect_config_files(p).join(","))
+        .unwrap_or_default();
+
     let venv_id = insert_venv(
         conn,
         &venv_path.to_string_lossy(),
@@ -148,6 +164,7 @@ pub fn insert_venv_full(
         &venv_name,
         &last_modified,
         &scanned_at,
+        &config_files,
     )?;
 
     for pkg in packages {
@@ -182,7 +199,8 @@ pub fn get_all_venvs(conn: &Connection) -> Result<Vec<Venv>> {
     let mut stmt = conn.prepare(
         "SELECT v.id, v.path, v.project_path, v.python_version, v.python_executable,
                 v.venv_name, v.last_modified, v.scanned_at,
-                (SELECT COUNT(*) FROM packages p WHERE p.venv_id = v.id) as pkg_count
+                (SELECT COUNT(*) FROM packages p WHERE p.venv_id = v.id) as pkg_count,
+                v.config_files
          FROM venvs v
          ORDER BY v.project_path",
     )?;
@@ -198,6 +216,7 @@ pub fn get_all_venvs(conn: &Connection) -> Result<Vec<Venv>> {
             last_modified: row.get(6)?,
             scanned_at: row.get(7)?,
             package_count: row.get(8)?,
+            config_files: row.get(9)?,
         })
     })?;
 
