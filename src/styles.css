@@ -98,9 +98,13 @@
   --purple-dim: rgba(196, 165, 255, 0.12);
 }
 
+html {
+  font-size: var(--ui-font-size, 13px);
+}
+
 body {
   font-family: var(--ui-font, var(--sans));
-  font-size: var(--ui-font-size, 13px);
+  font-size: 1rem;
   line-height: 1.5;
   color: var(--text);
   background-color: var(--bg);
@@ -143,14 +147,14 @@ header {
 }
 
 h1 {
-  font-size: 16px;
+  font-size: 1.231rem;
   font-weight: 700;
   color: var(--accent);
   letter-spacing: -0.3px;
 }
 
 .subtitle {
-  font-size: 11px;
+  font-size: 0.846rem;
   color: var(--text-muted);
   font-family: var(--mono);
 }
@@ -176,7 +180,7 @@ h1 {
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 1rem;
   pointer-events: none;
 }
 
@@ -187,7 +191,7 @@ h1 {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   color: var(--text);
-  font-size: 12px;
+  font-size: 0.923rem;
   font-family: var(--mono);
   outline: none;
   transition: border-color var(--transition), box-shadow var(--transition);
@@ -205,7 +209,7 @@ h1 {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 10px;
+  font-size: 0.769rem;
   color: var(--text-muted);
   font-family: var(--mono);
   padding: 1px 5px;
@@ -228,7 +232,7 @@ h1 {
   border: none;
   border-radius: var(--radius);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 0.923rem;
   cursor: pointer;
   transition: all var(--transition);
   white-space: nowrap;
@@ -248,7 +252,7 @@ h1 {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   color: var(--text-dim);
-  font-size: 16px;
+  font-size: 1.231rem;
   cursor: pointer;
   padding: 4px 8px;
   line-height: 1;
@@ -286,7 +290,7 @@ h1 {
 }
 
 .settings-label {
-  font-size: 10px;
+  font-size: 0.769rem;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -310,7 +314,7 @@ h1 {
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-size: 12px;
+  font-size: 0.923rem;
   font-family: var(--sans);
   cursor: pointer;
   text-align: left;
@@ -357,7 +361,7 @@ h1 {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-size: 12px;
+  font-size: 0.923rem;
   font-family: var(--sans);
   outline: none;
   cursor: pointer;
@@ -390,7 +394,7 @@ h1 {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-size: 14px;
+  font-size: 1.077rem;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition);
@@ -403,7 +407,7 @@ h1 {
 
 .font-size-display {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 0.923rem;
   color: var(--text);
   min-width: 36px;
   text-align: center;
@@ -432,7 +436,7 @@ main {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 0.923rem;
   color: var(--text-dim);
 }
 
@@ -440,7 +444,7 @@ main {
   font-weight: 700;
   color: var(--text);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 1rem;
 }
 
 .stat-divider {
@@ -461,7 +465,7 @@ main {
 }
 
 .filter-label {
-  font-size: 11px;
+  font-size: 0.846rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -475,7 +479,7 @@ main {
   gap: 4px;
   padding: 3px 10px;
   border-radius: 100px;
-  font-size: 11px;
+  font-size: 0.846rem;
   font-family: var(--mono);
   font-weight: 500;
   cursor: pointer;
@@ -498,14 +502,14 @@ main {
 }
 
 .filter-chip .chip-count {
-  font-size: 10px;
+  font-size: 0.769rem;
   opacity: 0.6;
 }
 
 .filter-chip-clear {
   padding: 3px 8px;
   border-radius: 100px;
-  font-size: 10px;
+  font-size: 0.769rem;
   cursor: pointer;
   border: 1px solid transparent;
   background: transparent;
@@ -524,7 +528,7 @@ main {
   align-items: center;
   gap: 4px;
   padding: 10px 20px 6px;
-  font-size: 12px;
+  font-size: 0.923rem;
 }
 
 .breadcrumb-item {
@@ -534,14 +538,14 @@ main {
   border: none;
   background: none;
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 0.923rem;
 }
 
 .breadcrumb-item:hover { color: var(--accent); }
 
 .breadcrumb-sep {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 0.769rem;
 }
 
 .breadcrumb-current {
@@ -559,7 +563,7 @@ main {
 }
 
 .section-title {
-  font-size: 12px;
+  font-size: 0.923rem;
   font-weight: 600;
   color: var(--text-dim);
   text-transform: uppercase;
@@ -575,7 +579,7 @@ main {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 0.923rem;
 }
 
 thead {
@@ -591,7 +595,7 @@ thead th {
   border-bottom: 1px solid var(--border);
   color: var(--text-muted);
   font-weight: 600;
-  font-size: 10px;
+  font-size: 0.769rem;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   cursor: pointer;
@@ -609,7 +613,7 @@ thead th.sorted {
 thead th .sort-arrow {
   display: inline-block;
   margin-left: 3px;
-  font-size: 9px;
+  font-size: 0.692rem;
   opacity: 0;
   transition: opacity var(--transition);
 }
@@ -657,7 +661,7 @@ td {
   justify-content: center;
   width: 18px;
   height: 18px;
-  font-size: 10px;
+  font-size: 0.769rem;
   color: var(--text-muted);
   transition: transform 0.2s ease, color var(--transition);
   flex-shrink: 0;
@@ -672,7 +676,7 @@ tr.expanded .expand-chevron { transform: rotate(90deg); color: var(--accent); }
 
 .project-name {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -681,7 +685,7 @@ tr.expanded .expand-chevron { transform: rotate(90deg); color: var(--accent); }
 
 .project-path {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 0.769rem;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -692,7 +696,7 @@ tr.expanded .expand-chevron { transform: rotate(90deg); color: var(--accent); }
 
 .venv-label {
   display: inline-block;
-  font-size: 9px;
+  font-size: 0.692rem;
   font-family: var(--mono);
   font-weight: 500;
   color: var(--text-muted);
@@ -747,7 +751,7 @@ tr.expanded .expand-chevron { transform: rotate(90deg); color: var(--accent); }
   transition: background var(--transition);
   cursor: pointer;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.846rem;
 }
 
 .pkg-item:hover {
@@ -771,13 +775,13 @@ tr.expanded .expand-chevron { transform: rotate(90deg); color: var(--accent); }
 
 td.mono {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.846rem;
 }
 
 td.num {
   text-align: right;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.846rem;
 }
 
 /* ── Package count bar ────────────────────────────────────────── */
@@ -806,7 +810,7 @@ td.num {
 
 .pkg-count-num {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.846rem;
   color: var(--text-dim);
   min-width: 24px;
   text-align: right;
@@ -818,7 +822,7 @@ td.num {
   display: inline-block;
   padding: 2px 7px;
   border-radius: 4px;
-  font-size: 10px;
+  font-size: 0.769rem;
   font-weight: 600;
   font-family: var(--mono);
   letter-spacing: 0.2px;
@@ -838,7 +842,7 @@ td.num {
 /* ── Relative time ────────────────────────────────────────────── */
 
 .time-relative {
-  font-size: 11px;
+  font-size: 0.846rem;
   color: var(--text-muted);
 }
 
@@ -856,20 +860,20 @@ td.num {
 }
 
 .empty-state-icon {
-  font-size: 40px;
+  font-size: 3.077rem;
   margin-bottom: 12px;
   opacity: 0.3;
 }
 
 .empty-state-title {
-  font-size: 16px;
+  font-size: 1.231rem;
   font-weight: 600;
   color: var(--text-dim);
   margin-bottom: 6px;
 }
 
 .empty-state-hint {
-  font-size: 12px;
+  font-size: 0.923rem;
 }
 
 .empty-state-hint kbd {
@@ -879,7 +883,7 @@ td.num {
   border: 1px solid var(--border);
   border-radius: 3px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.846rem;
 }
 
 /* ── Progress overlay ─────────────────────────────────────────── */
@@ -914,7 +918,7 @@ td.num {
 }
 
 .progress-text {
-  font-size: 14px;
+  font-size: 1.077rem;
   font-weight: 600;
   margin-bottom: 14px;
 }
@@ -936,7 +940,7 @@ td.num {
 }
 
 .progress-detail {
-  font-size: 10px;
+  font-size: 0.769rem;
   color: var(--text-muted);
   font-family: var(--mono);
   max-width: 380px;
@@ -953,7 +957,7 @@ td.num {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-dim);
-  font-size: 11px;
+  font-size: 0.846rem;
   cursor: pointer;
   transition: all var(--transition);
   font-family: var(--sans);
@@ -995,7 +999,7 @@ td.num {
   padding: 5px 8px;
   border-radius: var(--radius-sm);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.846rem;
 }
 
 .dep-item:hover { background: var(--bg-hover); }
@@ -1008,7 +1012,7 @@ td.num {
 }
 
 .dep-extra-label {
-  font-size: 11px;
+  font-size: 0.846rem;
   font-weight: 600;
   color: var(--orange);
   font-family: var(--mono);
@@ -1042,7 +1046,7 @@ mark {
   display: inline-block;
   padding: 2px 6px;
   border-radius: 3px;
-  font-size: 9px;
+  font-size: 0.692rem;
   font-family: var(--mono);
   font-weight: 600;
   background: var(--green-dim);
@@ -1092,14 +1096,14 @@ mark {
 }
 
 .file-viewer-title {
-  font-size: 14px;
+  font-size: 1.077rem;
   font-weight: 700;
   color: var(--green);
   font-family: var(--mono);
 }
 
 .file-viewer-path {
-  font-size: 10px;
+  font-size: 0.769rem;
   color: var(--text-muted);
   font-family: var(--mono);
   margin-top: 2px;
@@ -1109,7 +1113,7 @@ mark {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 20px;
+  font-size: 1.538rem;
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
@@ -1122,7 +1126,7 @@ mark {
   padding: 14px 18px;
   overflow: auto;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.846rem;
   line-height: 1.6;
   color: var(--text);
   white-space: pre-wrap;
@@ -1152,7 +1156,7 @@ mark {
   border: none;
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-size: 12px;
+  font-size: 0.923rem;
   font-family: var(--sans);
   text-align: left;
   cursor: pointer;
@@ -1194,7 +1198,7 @@ mark {
   border: 1px solid var(--accent);
   border-radius: 100px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  font-size: 12px;
+  font-size: 0.923rem;
   animation: slideUp 0.2s ease;
 }
 
@@ -1218,7 +1222,7 @@ mark {
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 1.077rem;
   padding: 0 2px;
   line-height: 1;
   transition: color var(--transition);
@@ -1249,7 +1253,7 @@ tbody tr.compare-selected {
 }
 
 .compare-col-title {
-  font-size: 12px;
+  font-size: 0.923rem;
   font-weight: 600;
   color: var(--text);
 }
@@ -1262,7 +1266,7 @@ tbody tr.compare-selected {
 
 .compare-col-center {
   text-align: center;
-  font-size: 10px;
+  font-size: 0.769rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1276,7 +1280,7 @@ tbody tr.compare-selected {
   padding: 4px 0;
   border-bottom: 1px solid var(--border-light);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.846rem;
   align-items: center;
 }
 
@@ -1327,7 +1331,7 @@ tbody tr.compare-selected {
   align-items: center;
   gap: 16px;
   padding: 10px 0;
-  font-size: 11px;
+  font-size: 0.846rem;
   color: var(--text-dim);
 }
 
@@ -1341,7 +1345,7 @@ tbody tr.compare-selected {
   display: flex;
   gap: 16px;
   padding: 8px 0 4px;
-  font-size: 12px;
+  font-size: 0.923rem;
 }
 
 .compare-summary-stat {
