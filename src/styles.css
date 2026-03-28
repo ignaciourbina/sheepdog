@@ -8,9 +8,9 @@
   --bg-expand: #141620;
   --border: #2d3148;
   --border-light: #232638;
-  --text: #e2e4ea;
-  --text-dim: #8b92a5;
-  --text-muted: #636b80;
+  --text: #e8eaf0;
+  --text-dim: #a0a8bc;
+  --text-muted: #7c849a;
   --accent: #60a5fa;
   --accent-hover: #3b82f6;
   --accent-dim: rgba(96, 165, 250, 0.12);
@@ -99,11 +99,15 @@
 }
 
 body {
-  font-family: var(--sans);
-  font-size: 13px;
+  font-family: var(--ui-font, var(--sans));
+  font-size: var(--ui-font-size, 13px);
   line-height: 1.5;
   color: var(--text);
   background-color: var(--bg);
+}
+
+td.mono, .pkg-item, .dep-item, .project-path, #search-input, .progress-detail, .file-viewer-body {
+  font-family: var(--code-font, var(--mono));
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -335,6 +339,75 @@ h1 {
 .theme-swatch-dark { background: #161822; }
 .theme-swatch-light { background: #f5f6f8; border-color: #d1d5e0; }
 .theme-swatch-hc { background: #000000; border-color: #404040; }
+
+.settings-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 10px 0;
+}
+
+.settings-row {
+  margin-bottom: 2px;
+}
+
+.settings-select {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--sans);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.settings-select:focus {
+  border-color: var(--accent);
+}
+
+.settings-select option {
+  background: var(--bg-surface);
+  color: var(--text);
+}
+
+.font-size-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.font-size-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.font-size-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.font-size-display {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  min-width: 36px;
+  text-align: center;
+}
 
 /* ── Main ─────────────────────────────────────────────────────── */
 

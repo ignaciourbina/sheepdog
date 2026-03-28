@@ -1133,9 +1133,78 @@ function initTheme() {
   setTheme(saved);
 }
 
+// ── Font settings ──────────────────────────────────────────────────
+
+const UI_FONTS = {
+  default: "",
+  inter: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
+  roboto: '"Roboto", -apple-system, BlinkMacSystemFont, sans-serif',
+  helvetica: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+  mono: '"JetBrains Mono", "Fira Code", "SF Mono", monospace',
+};
+
+const CODE_FONTS = {
+  default: "",
+  jetbrains: '"JetBrains Mono", monospace',
+  firacode: '"Fira Code", monospace',
+  cascadia: '"Cascadia Code", monospace',
+  ubuntu: '"Ubuntu Mono", monospace',
+};
+
+const uiFontSelect = document.getElementById("settings-ui-font");
+const codeFontSelect = document.getElementById("settings-code-font");
+const fontSizeDisplay = document.getElementById("font-size-display");
+const fontSizeDown = document.getElementById("font-size-down");
+const fontSizeUp = document.getElementById("font-size-up");
+
+function setUIFont(key) {
+  const font = UI_FONTS[key];
+  if (font) {
+    document.documentElement.style.setProperty("--ui-font", font);
+  } else {
+    document.documentElement.style.removeProperty("--ui-font");
+  }
+  localStorage.setItem("sheepdog-ui-font", key);
+  uiFontSelect.value = key;
+}
+
+function setCodeFont(key) {
+  const font = CODE_FONTS[key];
+  if (font) {
+    document.documentElement.style.setProperty("--code-font", font);
+  } else {
+    document.documentElement.style.removeProperty("--code-font");
+  }
+  localStorage.setItem("sheepdog-code-font", key);
+  codeFontSelect.value = key;
+}
+
+let currentFontSize = 13;
+
+function setFontSize(size) {
+  size = Math.max(10, Math.min(18, size));
+  currentFontSize = size;
+  document.documentElement.style.setProperty("--ui-font-size", size + "px");
+  localStorage.setItem("sheepdog-font-size", size);
+  fontSizeDisplay.textContent = size + "px";
+}
+
+uiFontSelect.addEventListener("change", () => setUIFont(uiFontSelect.value));
+codeFontSelect.addEventListener("change", () => setCodeFont(codeFontSelect.value));
+fontSizeDown.addEventListener("click", () => setFontSize(currentFontSize - 1));
+fontSizeUp.addEventListener("click", () => setFontSize(currentFontSize + 1));
+
+function initSettings() {
+  initTheme();
+  setUIFont(localStorage.getItem("sheepdog-ui-font") || "default");
+  setCodeFont(localStorage.getItem("sheepdog-code-font") || "default");
+  const savedSize = parseInt(localStorage.getItem("sheepdog-font-size")) || 13;
+  setFontSize(savedSize);
+}
+
 // ── Init ───────────────────────────────────────────────────────────
 
 window.addEventListener("DOMContentLoaded", () => {
-  initTheme();
+  initSettings();
   loadDashboard();
 });
