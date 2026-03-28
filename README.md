@@ -108,6 +108,10 @@ sheepdog/
 └── package.json
 ```
 
+## Built with
+
+Vibecoded with [Claude Code](https://claude.ai/claude-code) (Claude Opus 4.6). Architecture, Rust backend, frontend UI, pixel art icon, and install scripts were pair-programmed in a single session.
+
 ## License
 
 MIT
