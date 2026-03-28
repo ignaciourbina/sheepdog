@@ -28,12 +28,33 @@
         <button id="scan-btn" title="Scan for virtual environments">
           Scan
         </button>
+        <button id="settings-btn" class="settings-btn" title="Settings">&#x2699;</button>
       </div>
     </header>
 
     <div id="stats-bar" class="stats-bar hidden"></div>
     <div id="filter-bar" class="filter-bar hidden"></div>
     <nav id="breadcrumb" class="breadcrumb hidden"></nav>
+
+    <div id="settings-panel" class="settings-panel hidden">
+      <div class="settings-section">
+        <div class="settings-label">Theme</div>
+        <div class="theme-options">
+          <button class="theme-option" data-theme="dark">
+            <span class="theme-swatch theme-swatch-dark"></span>
+            Dark
+          </button>
+          <button class="theme-option" data-theme="light">
+            <span class="theme-swatch theme-swatch-light"></span>
+            Light
+          </button>
+          <button class="theme-option" data-theme="high-contrast">
+            <span class="theme-swatch theme-swatch-hc"></span>
+            High Contrast
+          </button>
+        </div>
+      </div>
+    </div>
 
     <div id="file-viewer-overlay" class="file-viewer-overlay hidden" onclick="if(event.target===this)closeFileViewer()">
       <div class="file-viewer">

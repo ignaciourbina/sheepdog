@@ -1098,8 +1098,44 @@ async function showComparison(leftId, rightId) {
   }
 }
 
+// ── Settings / Themes ──────────────────────────────────────────────
+
+const settingsBtn = document.getElementById("settings-btn");
+const settingsPanel = document.getElementById("settings-panel");
+
+settingsBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  settingsPanel.classList.toggle("hidden");
+  settingsBtn.classList.toggle("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) {
+    settingsPanel.classList.add("hidden");
+    settingsBtn.classList.remove("active");
+  }
+});
+
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("sheepdog-theme", theme);
+  document.querySelectorAll(".theme-option").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.theme === theme);
+  });
+}
+
+document.querySelectorAll(".theme-option").forEach((btn) => {
+  btn.addEventListener("click", () => setTheme(btn.dataset.theme));
+});
+
+function initTheme() {
+  const saved = localStorage.getItem("sheepdog-theme") || "dark";
+  setTheme(saved);
+}
+
 // ── Init ───────────────────────────────────────────────────────────
 
 window.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   loadDashboard();
 });
