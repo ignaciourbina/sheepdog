@@ -3,5 +3,5 @@
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    sheepdog_lib::run_with_args(&args);
+    std::process::exit(sheepdog_lib::run_from_args(&args));
 }

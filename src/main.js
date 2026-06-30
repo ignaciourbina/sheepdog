@@ -1,3 +1,6 @@
+import { buildExportFilename, downloadTextFile, exportRowsToText } from "./download-utils.js";
+import { formatBytes } from "./format-utils.js";
+
 const { invoke } = window.__TAURI__.core;
 const { Channel } = window.__TAURI__.core;
 
@@ -121,6 +124,8 @@ function sortVenvs(venvs, col, dir) {
         return mult * a.python_version.localeCompare(b.python_version);
       case "packages":
         return mult * (a.package_count - b.package_count);
+      case "size":
+        return mult * (a.size_bytes - b.size_bytes);
       case "modified":
         return mult * (a.last_modified || "").localeCompare(b.last_modified || "");
       default:
@@ -198,7 +203,6 @@ function renderStats(status) {
 
   statsBar.classList.remove("hidden");
   const pyVersions = new Set(allVenvs.map((v) => pyMinor(v.python_version)));
-  const maxPkgs = Math.max(...allVenvs.map((v) => v.package_count), 1);
 
   statsBar.innerHTML = `
     <div class="stat"><span class="stat-value">${status.venv_count}</span> venvs</div>
@@ -206,7 +210,53 @@ function renderStats(status) {
     <div class="stat"><span class="stat-value">${status.package_count.toLocaleString()}</span> packages</div>
     <div class="stat-divider"></div>
     <div class="stat"><span class="stat-value">${pyVersions.size}</span> Python versions</div>
+    <div class="stat-divider"></div>
+    <div class="stat"><span class="stat-value">${formatBytes(status.total_size_bytes)}</span> indexed size</div>
+    <div class="stats-spacer"></div>
+    <div class="export-controls">
+      <select id="export-format" class="export-format" title="Export format">
+        <option value="csv">CSV</option>
+        <option value="json">JSON</option>
+      </select>
+      <button id="export-data-btn" class="btn-ghost export-btn" title="Download consolidated table">Export</button>
+    </div>
   `;
+
+  document.getElementById("export-data-btn")?.addEventListener("click", exportConsolidatedData);
+}
+
+// ── Export ─────────────────────────────────────────────────────────
+
+async function exportConsolidatedData() {
+  const btn = document.getElementById("export-data-btn");
+  const format = document.getElementById("export-format")?.value || "csv";
+  if (!btn) return;
+
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Exporting...";
+
+  try {
+    // The backend owns the data shape; frontend utilities only serialize and
+    // trigger the download so CSV/JSON behavior stays independent of Tauri IPC.
+    const rows = await invoke("get_export_rows");
+    const filename = buildExportFilename(format);
+    const { content, mimeType } = exportRowsToText(rows, format);
+    downloadTextFile(filename, content, mimeType);
+
+    btn.textContent = "Exported";
+    setTimeout(() => {
+      btn.textContent = originalText;
+    }, 1200);
+  } catch (e) {
+    console.error("Export failed:", e);
+    btn.textContent = "Failed";
+    setTimeout(() => {
+      btn.textContent = originalText;
+    }, 1800);
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 // ── Breadcrumb ─────────────────────────────────────────────────────
@@ -451,6 +501,7 @@ function renderVenvTable(venvs) {
     { key: "project", label: "Project" },
     { key: "python", label: "Python" },
     { key: "packages", label: "Packages" },
+    { key: "size", label: "Size" },
     { key: "config", label: "Config" },
     { key: "modified", label: "Modified" },
   ];
@@ -495,12 +546,13 @@ function renderVenvTable(venvs) {
           <span class="pkg-count-num">${v.package_count}</span>
         </div>
       </td>
+      <td><span class="mono">${formatBytes(v.size_bytes)}</span></td>
       <td>${renderConfigBadges(v.config_files, v.project_path)}</td>
       <td><span class="time-relative" title="${escapeHtml(v.last_modified)}">${relativeTime(v.last_modified)}</span></td>
     </tr>`;
 
     if (isExpanded) {
-      html += `<tr class="expanded-content" data-expanded-for="${v.id}"><td colspan="5">
+      html += `<tr class="expanded-content" data-expanded-for="${v.id}"><td colspan="6">
         <div class="expanded-inner" id="expanded-${v.id}">
           <div style="color:var(--text-muted);font-size:11px">Loading packages...</div>
         </div>

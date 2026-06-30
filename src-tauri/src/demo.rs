@@ -196,11 +196,14 @@ pub fn populate_demo_data(conn: &Connection) -> Result<()> {
 
     let scanned_at = "2026-03-27 19:30:00";
 
-    for demo in DEMO_VENVS {
+    for (index, demo) in DEMO_VENVS.iter().enumerate() {
         let venv_path = format!("{}/{}", demo.project, demo.venv_name);
-        let venv_id = conn.execute(
-            "INSERT INTO venvs (path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at, config_files)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+        // Give demo environments deterministic, varied sizes so the dashboard
+        // and CLI can exercise sorting and human-readable formatting.
+        let size_bytes = (120 + index as i64 * 73) * 1024 * 1024;
+        conn.execute(
+            "INSERT INTO venvs (path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at, size_bytes, config_files)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
             params![
                 venv_path,
                 demo.project,
@@ -209,6 +212,7 @@ pub fn populate_demo_data(conn: &Connection) -> Result<()> {
                 demo.venv_name,
                 "2026-03-15 10:30",
                 scanned_at,
+                size_bytes,
                 demo.config_files,
             ],
         )?;

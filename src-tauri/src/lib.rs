@@ -1,12 +1,15 @@
+mod cli;
 mod commands;
 mod db;
 mod demo;
+mod disk_usage;
+mod export;
 mod models;
 mod parser;
 mod pypi;
 mod scanner;
+mod service;
 
-use std::path::PathBuf;
 use std::sync::Mutex;
 
 pub struct AppState {
@@ -14,25 +17,34 @@ pub struct AppState {
     pub pypi_cache: pypi::PypiCache,
 }
 
-pub fn run_with_args(args: &[String]) {
-    let is_demo = args.iter().any(|a| a == "--demo");
+pub fn run_from_args(args: &[String]) -> i32 {
+    match cli::parse_startup_from(args) {
+        Ok(cli::StartupMode::Gui { demo }) => {
+            run_gui(demo);
+            0
+        }
+        Ok(cli::StartupMode::Cli(cli_args)) => match cli::run_cli(cli_args) {
+            Ok(()) => 0,
+            Err(error) => {
+                eprintln!("{}", error.message());
+                error.code()
+            }
+        },
+        Err(error) => {
+            let code = error.exit_code();
+            let _ = error.print();
+            code
+        }
+    }
+}
 
-    let conn = if is_demo {
-        let conn = rusqlite::Connection::open_in_memory()
-            .expect("Failed to open in-memory database");
-        db::init_db(&conn).expect("Failed to initialize database");
-        demo::populate_demo_data(&conn).expect("Failed to populate demo data");
+pub fn run_gui(demo: bool) {
+    let conn = if demo {
+        let conn = service::open_demo_db().expect("Failed to initialize demo database");
         eprintln!("Sheepdog: running in demo mode (in-memory DB, fake data)");
         conn
     } else {
-        let db_path = dirs::cache_dir()
-            .unwrap_or_else(|| PathBuf::from("/tmp"))
-            .join("sheepdog")
-            .join("sheepdog.db");
-        std::fs::create_dir_all(db_path.parent().unwrap()).ok();
-        let conn = rusqlite::Connection::open(&db_path).expect("Failed to open database");
-        db::init_db(&conn).expect("Failed to initialize database");
-        conn
+        service::open_cache_db().expect("Failed to initialize database")
     };
 
     tauri::Builder::default()
@@ -48,6 +60,7 @@ pub fn run_with_args(args: &[String]) {
             commands::search_packages,
             commands::get_venvs_with_package,
             commands::get_package_dependencies,
+            commands::get_export_rows,
             commands::scan_venvs,
             commands::check_outdated,
             commands::read_project_file,
@@ -59,5 +72,5 @@ pub fn run_with_args(args: &[String]) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    run_with_args(&[]);
+    run_gui(false);
 }

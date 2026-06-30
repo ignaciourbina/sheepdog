@@ -1,5 +1,6 @@
 use rusqlite::{params, Connection, Result};
 
+use crate::disk_usage;
 use crate::models::*;
 use crate::parser;
 
@@ -16,6 +17,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             venv_name         TEXT NOT NULL,
             last_modified     TEXT,
             scanned_at        TEXT NOT NULL,
+            size_bytes        INTEGER NOT NULL DEFAULT 0,
             config_files      TEXT NOT NULL DEFAULT ''
         );
 
@@ -55,6 +57,13 @@ pub fn init_db(conn: &Connection) -> Result<()> {
         conn.execute_batch("ALTER TABLE venvs ADD COLUMN config_files TEXT NOT NULL DEFAULT ''")?;
     }
 
+    // Existing caches predate disk accounting. They remain readable with a
+    // zero value and receive measured sizes during the next scan.
+    let has_size_bytes: bool = conn.prepare("SELECT size_bytes FROM venvs LIMIT 0").is_ok();
+    if !has_size_bytes {
+        conn.execute_batch("ALTER TABLE venvs ADD COLUMN size_bytes INTEGER NOT NULL DEFAULT 0")?;
+    }
+
     Ok(())
 }
 
@@ -80,12 +89,13 @@ pub fn insert_venv(
     venv_name: &str,
     last_modified: &str,
     scanned_at: &str,
+    size_bytes: i64,
     config_files: &str,
 ) -> Result<i64> {
     conn.execute(
-        "INSERT INTO venvs (path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at, config_files)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
-        params![path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at, config_files],
+        "INSERT INTO venvs (path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at, size_bytes, config_files)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+        params![path, project_path, python_version, python_executable, venv_name, last_modified, scanned_at, size_bytes, config_files],
     )?;
     Ok(conn.last_insert_rowid())
 }
@@ -149,6 +159,7 @@ pub fn insert_venv_full(
         .unwrap_or_default();
 
     let scanned_at = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let size_bytes = disk_usage::directory_size_bytes(venv_path) as i64;
 
     let config_files = venv_path
         .parent()
@@ -164,6 +175,7 @@ pub fn insert_venv_full(
         &venv_name,
         &last_modified,
         &scanned_at,
+        size_bytes,
         &config_files,
     )?;
 
@@ -200,7 +212,7 @@ pub fn get_all_venvs(conn: &Connection) -> Result<Vec<Venv>> {
         "SELECT v.id, v.path, v.project_path, v.python_version, v.python_executable,
                 v.venv_name, v.last_modified, v.scanned_at,
                 (SELECT COUNT(*) FROM packages p WHERE p.venv_id = v.id) as pkg_count,
-                v.config_files
+                v.size_bytes, v.config_files
          FROM venvs v
          ORDER BY v.project_path",
     )?;
@@ -216,7 +228,8 @@ pub fn get_all_venvs(conn: &Connection) -> Result<Vec<Venv>> {
             last_modified: row.get(6)?,
             scanned_at: row.get(7)?,
             package_count: row.get(8)?,
-            config_files: row.get(9)?,
+            size_bytes: row.get(9)?,
+            config_files: row.get(10)?,
         })
     })?;
 
@@ -270,7 +283,10 @@ pub fn search_packages(conn: &Connection, query: &str) -> Result<Vec<PackageSear
 }
 
 /// Get all venvs that contain a specific package (exact name match, case-insensitive).
-pub fn get_venvs_with_package(conn: &Connection, package_name: &str) -> Result<Vec<PackageSearchResult>> {
+pub fn get_venvs_with_package(
+    conn: &Connection,
+    package_name: &str,
+) -> Result<Vec<PackageSearchResult>> {
     let mut stmt = conn.prepare(
         "SELECT p.name, p.version, v.path, v.project_path, v.python_version, v.venv_name, v.id, p.id
          FROM packages p
@@ -322,6 +338,8 @@ pub fn get_package_dependencies(conn: &Connection, package_id: i64) -> Result<Ve
 pub fn get_scan_status(conn: &Connection) -> Result<ScanStatus> {
     let venv_count: i64 = conn.query_row("SELECT COUNT(*) FROM venvs", [], |r| r.get(0))?;
     let package_count: i64 = conn.query_row("SELECT COUNT(*) FROM packages", [], |r| r.get(0))?;
+    let total_size_bytes: i64 =
+        conn.query_row("SELECT COALESCE(SUM(size_bytes), 0) FROM venvs", [], |r| r.get(0))?;
     let last_scan: Option<String> =
         conn.query_row("SELECT MAX(scanned_at) FROM venvs", [], |r| r.get(0))?;
 
@@ -329,6 +347,90 @@ pub fn get_scan_status(conn: &Connection) -> Result<ScanStatus> {
         has_data: venv_count > 0,
         venv_count,
         package_count,
+        total_size_bytes,
         last_scan,
     })
+}
+
+/// Get a flat export table with one row per venv/package/dependency combination.
+pub fn get_export_rows(conn: &Connection) -> Result<Vec<ExportRow>> {
+    // LEFT JOIN keeps venvs/packages visible even when package metadata does not
+    // include dependency rows. That makes the export suitable for merge/dedup
+    // analysis without losing sparse environments.
+    let mut stmt = conn.prepare(
+        "SELECT
+            v.id,
+            v.path,
+            v.project_path,
+            v.python_version,
+            v.python_executable,
+            v.venv_name,
+            v.last_modified,
+            v.scanned_at,
+            v.config_files,
+            (SELECT COUNT(*) FROM packages pc WHERE pc.venv_id = v.id) AS package_count,
+            v.size_bytes,
+            p.id,
+            p.name,
+            p.version,
+            p.summary,
+            d.id,
+            d.dep_name,
+            d.version_spec,
+            d.extra,
+            d.requires_raw
+         FROM venvs v
+         LEFT JOIN packages p ON p.venv_id = v.id
+         LEFT JOIN dependencies d ON d.package_id = p.id
+         ORDER BY v.project_path, v.venv_name, p.name, d.dep_name",
+    )?;
+
+    let rows = stmt.query_map([], |row| {
+        Ok(ExportRow {
+            venv_id: row.get(0)?,
+            venv_path: row.get(1)?,
+            project_path: row.get(2)?,
+            python_version: row.get(3)?,
+            python_executable: row.get(4)?,
+            venv_name: row.get(5)?,
+            last_modified: row.get(6)?,
+            scanned_at: row.get(7)?,
+            config_files: row.get(8)?,
+            package_count: row.get(9)?,
+            venv_size_bytes: row.get(10)?,
+            package_id: row.get(11)?,
+            package_name: row.get(12)?,
+            package_version: row.get(13)?,
+            package_summary: row.get(14)?,
+            dependency_id: row.get(15)?,
+            dependency_name: row.get(16)?,
+            dependency_version_spec: row.get(17)?,
+            dependency_extra: row.get(18)?,
+            dependency_requires_raw: row.get(19)?,
+        })
+    })?;
+
+    rows.collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::service;
+
+    #[test]
+    fn export_rows_include_flat_venv_and_package_data() {
+        let conn = service::open_demo_db().unwrap();
+        let rows = get_export_rows(&conn).unwrap();
+
+        assert!(!rows.is_empty());
+        assert!(rows.iter().any(|row| {
+            row.project_path == "/home/user/projects/web-dashboard"
+                && row.package_name.as_deref() == Some("requests")
+                && row.package_version.as_deref() == Some("2.32.3")
+        }));
+        assert!(rows.iter().all(|row| !row.venv_path.is_empty()));
+        assert!(rows.iter().all(|row| row.package_count > 0));
+        assert!(rows.iter().all(|row| row.venv_size_bytes > 0));
+    }
 }

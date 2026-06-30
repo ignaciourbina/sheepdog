@@ -430,6 +430,7 @@ main {
   padding: 10px 20px;
   border-bottom: 1px solid var(--border-light);
   background: var(--bg);
+  flex-wrap: wrap;
 }
 
 .stat {
@@ -451,6 +452,39 @@ main {
   width: 1px;
   height: 16px;
   background: var(--border);
+}
+
+.stats-spacer {
+  flex: 1;
+  min-width: 12px;
+}
+
+.export-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.export-format {
+  height: 28px;
+  padding: 4px 28px 4px 9px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.846rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.export-format:focus {
+  border-color: var(--accent);
+}
+
+.export-btn {
+  height: 28px;
 }
 
 /* ── Filter chips ─────────────────────────────────────────────── */

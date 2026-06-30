@@ -10,6 +10,7 @@ Built with **Rust** (backend) and **Tauri v2** (native webview UI). Single binar
 
 - **Scan** your filesystem for all Python venvs (finds `pyvenv.cfg` files)
 - **Index** every installed package, version, and dependency into SQLite
+- **Measure** allocated disk space for each venv so large environments are easy to identify
 - **Search** across all venvs instantly — "which repos have `otree` installed?"
 - **Compare** two venvs side by side — see shared packages, version differences, and exclusives
 - **Check outdated** packages against PyPI
@@ -46,6 +47,43 @@ sheepdog
 
 Or find **Sheepdog** in your desktop application launcher.
 
+### CLI
+
+Sheepdog also includes a terminal interface under the `cli` subcommand. The GUI still opens when you run `sheepdog` with no arguments.
+
+```bash
+sheepdog cli status
+sheepdog cli scan ~/projects
+sheepdog cli list
+sheepdog cli packages 1
+sheepdog cli search requests
+sheepdog cli deps 42
+sheepdog cli export
+```
+
+Use `--json` with table-style CLI commands for scripting:
+
+```bash
+sheepdog cli search django --json
+sheepdog cli list --json
+```
+
+Export the consolidated venv/package/dependency table for downstream analysis:
+
+```bash
+sheepdog cli export --format csv
+sheepdog cli export --format json --output sheepdog-export.json
+sheepdog cli export --format csv --output -
+```
+
+Use demo data without touching the cache database:
+
+```bash
+sheepdog cli --demo status
+sheepdog cli --demo list
+sheepdog cli --demo export --format json --output demo-export.json
+```
+
 ### Uninstall
 
 ```bash
@@ -76,7 +114,7 @@ Or find **Sheepdog** in your desktop application launcher.
 
 ## How it works
 
-**Scanner** — Walks your filesystem with `walkdir`, looking for `pyvenv.cfg` files. Skips `node_modules`, `.git`, `__pycache__`, Trash, and snap directories.
+**Scanner** — Walks your filesystem with `walkdir`, looking for `pyvenv.cfg` files. Skips `node_modules`, `.git`, `__pycache__`, Trash, and snap directories. During indexing, it records du-style allocated bytes for each venv.
 
 **Parser** — Reads `pyvenv.cfg` for Python version, then walks `lib/pythonX.Y/site-packages/*.dist-info/METADATA` to extract package names, versions, summaries, and dependencies (`Requires-Dist`).
 

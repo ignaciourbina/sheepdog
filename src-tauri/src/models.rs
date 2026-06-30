@@ -11,6 +11,7 @@ pub struct Venv {
     pub last_modified: String,
     pub scanned_at: String,
     pub package_count: i64,
+    pub size_bytes: i64,
     pub config_files: String, // comma-separated: requirements.txt,pyproject.toml,...
 }
 
@@ -50,6 +51,7 @@ pub struct ScanStatus {
     pub has_data: bool,
     pub venv_count: i64,
     pub package_count: i64,
+    pub total_size_bytes: i64,
     pub last_scan: Option<String>,
 }
 
@@ -68,4 +70,30 @@ pub struct PypiVersionInfo {
     pub latest_version: Option<String>,
     pub is_outdated: bool,
     pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExportRow {
+    // This is intentionally denormalized for downstream tools: each row has
+    // enough venv, package, and dependency context to be analyzed independently.
+    pub venv_id: i64,
+    pub venv_path: String,
+    pub project_path: String,
+    pub python_version: String,
+    pub python_executable: String,
+    pub venv_name: String,
+    pub last_modified: String,
+    pub scanned_at: String,
+    pub config_files: String,
+    pub package_count: i64,
+    pub venv_size_bytes: i64,
+    pub package_id: Option<i64>,
+    pub package_name: Option<String>,
+    pub package_version: Option<String>,
+    pub package_summary: Option<String>,
+    pub dependency_id: Option<i64>,
+    pub dependency_name: Option<String>,
+    pub dependency_version_spec: Option<String>,
+    pub dependency_extra: Option<String>,
+    pub dependency_requires_raw: Option<String>,
 }
